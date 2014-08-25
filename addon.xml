@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="script.watched.in.addons.manager" name="Watched-in-addons manager" version="0.0.1" provider-name="kit500">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>executable</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Performs export/import/delete DB manipulation for watched flags and resume time positions for video addons.</summary>
+    <description>How to use:
+    In the addon settings specify the export/import files locations (if not specified, the default ones in the addon folder will be used).
+
+    The following actions is available:
+    [B]Export[/B] - Export addons whatch states (flags and resume time positions) to a file.
+    [B]Import[/B] - Import addons whatch states from a file.
+    [B]View statistics / delete[/B] - Shows the amount of watched videos for any installed addon. Choosing the particular addon will delete all watched states from DB for choosen addon.</description>
+    <platform>all</platform>
+  </extension>
+</addon>

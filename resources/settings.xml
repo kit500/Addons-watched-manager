@@ -1,0 +1,4 @@
+<settings>
+    <setting type="file" id="export_file" label="File to export to"/>
+    <setting type="file" id="import_file" label="File to import from"/>
+</settings>
