@@ -5,26 +5,32 @@ import os, re, json, urllib
 import sqlite3 as sqlite
 import xbmcaddon, xbmcgui, xbmcplugin, xbmc
 
-Addon = xbmcaddon.Addon(id = 'script.watched.in.addons.manager')
-addon_path = Addon.getAddonInfo('path')
-addon_id   = Addon.getAddonInfo('id')
+Addon = xbmcaddon.Addon(id = 'script.addons.watched.backup')
+addon_path    = Addon.getAddonInfo('path')
+addon_profile = Addon.getAddonInfo('profile')
+addon_name    = Addon.getAddonInfo('name')
+addon_id      = Addon.getAddonInfo('id')
+#print addon_profile
+
+ls = Addon.getLocalizedString
+log = xbmc.log
 
 def regexp(expr, item):
-    reg = re.compile(expr)
-    return reg.search(item) is not None
+	reg = re.compile(expr)
+	return reg.search(item) is not None
 
 def showMessage(heading, message, times = 6000):
-    xbmc.executebuiltin('XBMC.Notification("%s", "%s", %s)' % (heading, message, times))
+	xbmc.executebuiltin('XBMC.Notification("%s", "%s", %s)' % (heading, message, times))
 
 def construct_uri(params):
-    return '%s?%s' % (sys.argv[0], urllib.urlencode(params))
+	return '%s?%s' % (sys.argv[0], urllib.urlencode(params))
 
 def GetDB():
 	dbpath = xbmc.translatePath('special://database')
 	dblist = os.listdir(dbpath)
 	dbvs = []
 	for file in dblist:
-		if re.findall('MyVideos(\d+)\.db',file): dbvs.append(int(re.findall('MyVideos(\d+)\.db', file)[0]))
+		if re.findall('MyVideos(\d+)\.db', file): dbvs.append(int(re.findall('MyVideos(\d+)\.db', file)[0]))
 	dbv = str(max(dbvs))
 	print 'DB version: ' + dbv
 	dbpath = xbmc.translatePath(os.path.join('special://database', 'MyVideos' + dbv + '.db'))
@@ -35,7 +41,7 @@ def get_params(paramstring):
     param = []
     if len(paramstring) >= 2:
         params = paramstring
-        cleanedparams = params.replace('?','')
+        cleanedparams = params.replace('?', '')
         if (params[len(params) - 1] == '/'):
             params = params[0:len(params) - 2]
         pairsofparams = cleanedparams.split('&')
@@ -54,16 +60,14 @@ def SubmitSqlRequest(request, vars = (), many = False):
 	try:
 		dbconn = sqlite.connect(dbpath, timeout = 1000, check_same_thread = False)
 	except Exception as e:
-		print "DB connection error in SubmitSqlRequest"
-		print e
+		log(ls(32000) % str(e))
 		return None
 	dbconn.create_function("REGEXP", 2, regexp)
 	c = dbconn.cursor()
 	try:
-		c.execute(request,vars)
+		c.execute(request, vars)
 	except Exception as e:
-		print "SubmitSqlRequest error in executing " + request
-		print e
+		log(ls(32001) % (request, str(e))
 		dbconn.close()
 		return None
 	if re.search('(UPDATE|INSERT|DELETE)', request):
@@ -71,7 +75,7 @@ def SubmitSqlRequest(request, vars = (), many = False):
 			dbconn.commit()
 			result = c.rowcount
 		except:
-			print "DB commiting error in SubmitSqlRequest: " + e
+			log(ls(32002) % e)
 			dbconn.close()
 			return None
 	else:
@@ -89,7 +93,7 @@ def GetAddons():
 		}')
 	response = json.loads(response)
 	addons = response["result"]["addons"]
-	#print json.dumps(addons, indent=1, ensure_ascii=False).encode('utf-8')
+	#print json.dumps(addons, indent = 1, ensure_ascii = False).encode('utf-8')
 	addonids = []
 	for addon in addons:
 		addonids.append(addon["addonid"])
@@ -103,20 +107,20 @@ def GetLinesCount(filename):
 
 
 def Import(params):
-	print addon_id + ": Import"
+	log(addon_id + ": Import")
 	addonids = GetAddons()
 	paths = SubmitSqlRequest('SELECT strPath, idPath FROM path WHERE strPath REGEXP "plugin://.+"', many = True)
 	#print paths
 	filelen = GetLinesCount(import_file)
 	if filelen == 0:
-		print "Import file is empty"
-		showMessage(addon_id, "Import file is empty")
+		log(ls(32003))
+		showMessage(addon_id, ls(32003))
 		return
 	imf = open(import_file, 'r')
 	pdlg = xbmcgui.DialogProgress()
 	pds = 100.0 / float(filelen)
 	cpd = 0.0
-	pdlg.create(addon_id, 'Importing...')
+	pdlg.create(addon_id, ls(32005))
 
 	for linen, rline in enumerate(imf):
 		cpd += pds
@@ -129,74 +133,75 @@ def Import(params):
 			if items[1].isdigit():
 				items[1] = int(items[1])
 			else:
-				print addon_id + ": Not a proper line in import file: " + str(linen) + ". Playcount property must be an integer or null"
-				print rline
+				log(ls(32006) % str(linen))
+				log(rline)
 				continue
 		try:
 			path = re.compile('(plugin://.+?/).*').findall(items[0])[0]
 		except Exception as e:
-			print e
-			print addon_id + ": Not a proper line in import file: " + str(linen) + ". Wrong path"
-			print rline
+			log(e)
+			log(ls(32007) % str(linen))
+			log(rline)
 			continue
 		addonid = re.compile('plugin://(.+?)/.*').findall(path)[0]
 		if addonid not in addonids:
-			print "Addon is not installed: " + addonid
+			log(ls(32008) % addonid, 1)
+			log(rline, 1)
 			continue
-		print items
+		log(str(items))
 		existedidpath = filter(lambda i: i[0] == path, paths)
 		if len(items) != 3 and len(items) != 5:
-			print addon_id + ": Not a proper line in import file: " + str(linen) + ". Wrong line format"
-			print rline
+			log(ls(32009) % str(linen))
+			log(rline)
 			continue
 
 		if existedidpath:
-			print "existedidpath: " + str(existedidpath)
 			existedidpath = existedidpath[0][1]
-			existedidfile = SubmitSqlRequest('SELECT idFile FROM files WHERE strFilename=?',(items[0],))
+			log("existed path id: " + str(existedidpath))
+			existedidfile = SubmitSqlRequest('SELECT idFile FROM files WHERE strFilename=?', (items[0],))
 			if existedidfile:
-				print "existedidfile: " + str(existedidfile)
-				tac = SubmitSqlRequest('UPDATE files SET idPath=?, strFilename=?, playCount=?, lastPlayed=? WHERE idFile=?',(existedidpath,items[0],items[1],items[2],existedidfile[0]))
-				print "tac update files: " + str(tac)
+				log("existed file id: " + str(existedidfile[0]))
+				tac = SubmitSqlRequest('UPDATE files SET idPath=?, strFilename=?, playCount=?, lastPlayed=? WHERE idFile=?', (existedidpath, items[0], items[1], items[2], existedidfile[0]))
+				log("tac update files: " + str(tac))
 			else:
-				tac = SubmitSqlRequest('INSERT INTO files (idPath, strFilename, playCount, lastPlayed) VALUES (?,?,?,?)',(existedidpath,items[0],items[1],items[2]))
-				print "tac insert files: " + str(tac)
+				tac = SubmitSqlRequest('INSERT INTO files (idPath, strFilename, playCount, lastPlayed) VALUES (?,?,?,?)', (existedidpath, items[0], items[1], items[2]))
+				log("tac insert files: " + str(tac))
 		else:
-			tac = SubmitSqlRequest('INSERT INTO path (strPath, strContent, strScraper) VALUES (?,?,?)',(path,"",""))
-			print "tac insert path: " + str(tac)
-			cidpath = SubmitSqlRequest('SELECT idPath FROM path WHERE strPath=?',(path,))
-			print "idpath: " + str(cidpath)
+			tac = SubmitSqlRequest('INSERT INTO path (strPath, strContent, strScraper) VALUES (?,?,?)', (path, "", ""))
+			log("tac insert path: " + str(tac))
+			cidpath = SubmitSqlRequest('SELECT idPath FROM path WHERE strPath=?', (path,))
+			log("path id: " + str(cidpath[0]))
 			#update current paths list
 			paths.append((path, cidpath[0]))
-			tac = SubmitSqlRequest('INSERT INTO files (idPath, strFilename, playCount, lastPlayed) VALUES (?,?,?,?)',(cidpath[0],items[0],items[1],items[2]))
-			print "tac insert files: " + str(tac)
+			tac = SubmitSqlRequest('INSERT INTO files (idPath, strFilename, playCount, lastPlayed) VALUES (?,?,?,?)', (cidpath[0], items[0], items[1], items[2]))
+			log("tac insert files: " + str(tac))
 		
 		if len(items) == 5:
-			idfile = SubmitSqlRequest('SELECT idFile FROM files WHERE strFilename=?',(items[0],))
-			print "idfile: " + str(idfile)
-			existedidbookmark = SubmitSqlRequest('SELECT idBookmark FROM bookmark WHERE idFile=?',(idfile[0],))
+			idfile = SubmitSqlRequest('SELECT idFile FROM files WHERE strFilename=?', (items[0],))
+			log("file id: " + str(idfile[0]))
+			existedidbookmark = SubmitSqlRequest('SELECT idBookmark FROM bookmark WHERE idFile=?', (idfile[0],))
 			if existedidbookmark:
-				tac = SubmitSqlRequest('UPDATE bookmark SET idFile=?, timeInSeconds=?, totalTimeInSeconds=? WHERE idBookmark=?',(idfile[0],items[3],items[4],existedidbookmark[0]))
-				print "tac update bookmark: " + str(tac)
+				tac = SubmitSqlRequest('UPDATE bookmark SET idFile=?, timeInSeconds=?, totalTimeInSeconds=? WHERE idBookmark=?', (idfile[0], items[3], items[4], existedidbookmark[0]))
+				log("tac update bookmark: " + str(tac))
 			else:
-				tac = SubmitSqlRequest('INSERT INTO bookmark (idFile, timeInSeconds, totalTimeInSeconds, thumbNailImage, player, playerState, type) VALUES (?,?,?,?,?,?,1)',(idfile[0],items[3],items[4],"","DVDPlayer",""))
-				print "tac insert bookmark: " + str(tac)
+				tac = SubmitSqlRequest('INSERT INTO bookmark (idFile, timeInSeconds, totalTimeInSeconds, thumbNailImage, player, playerState, type) VALUES (?,?,?,?,?,?,1)', (idfile[0], items[3], items[4], "", "DVDPlayer", ""))
+				log("tac insert bookmark: " + str(tac))
 	
 	pdlg.close()
 	imf.close()
 
 
 def Delete(params):
-	print addon_id + ": Delete"
+	log(addon_id + ": Delete")
 	addonids = GetAddons()
 
 	for addonid in addonids:
 		result = SubmitSqlRequest('SELECT idFile FROM files WHERE strFilename REGEXP "plugin://'+addonid+'/.*?"', many = True)
-		print addonid + ": found " + str(len(result)) + " entries"
+		log(ls(32010) % (addonid, str(len(result))), 1)
 		deltitle = addonid
 		if len(result) > 0:
 			deltitle = "[COLOR lime]" + deltitle + "[/COLOR]"
-		deltitle = "delete all for " + deltitle + " ([COLOR yellowgreen]" + str(len(result)) + "[/COLOR] entries)"
+		deltitle = ls(32011) % (deltitle, "[COLOR yellowgreen]" + str(len(result)) + "[/COLOR]")
 		li = xbmcgui.ListItem(deltitle)
 		uri = construct_uri({"func": "deletespecific", "addonid": addonid})
 		xbmcplugin.addDirectoryItem(h, uri, li)
@@ -206,55 +211,55 @@ def Delete(params):
 def deletespecific(params):
 	addonid = params['addonid']
 	dialog = xbmcgui.Dialog()
-	confirm = dialog.yesno(addon_id, "Delete all for " + addonid + "?")
+	confirm = dialog.yesno(addon_id, ls(32012) % addonid)
 	if confirm:
 		result = SubmitSqlRequest('SELECT idFile FROM files WHERE strFilename REGEXP "plugin://'+addonid+'/.*?"', many = True)
 		if len(result) == 0:
-			showMessage(addon_id, addonid + ": nothing to delete")
+			showMessage(addon_id, ls(32013) % addonid)
 			return
 		pdlg = xbmcgui.DialogProgress()
 		pds = 100.0 / float(len(result))
 		cpd = 0.0
-		pdlg.create(addon_id, 'Deleting...')
+		pdlg.create(addon_id, ls(32014))
 		for item in result:
-			print item
+			log(str(item))
 			cpd += pds
 			pdlg.update(int(cpd))
-			bm = SubmitSqlRequest('SELECT idBookmark FROM bookmark WHERE idFile=? AND type=1',(item[0],))
-			tac = SubmitSqlRequest('DELETE FROM files WHERE idFile=?',(item[0],))
-			print "tac delete files: " + str(tac)
+			bm = SubmitSqlRequest('SELECT idBookmark FROM bookmark WHERE idFile=? AND type=1', (item[0],))
+			tac = SubmitSqlRequest('DELETE FROM files WHERE idFile=?' ,(item[0],))
+			log("tac delete files: " + str(tac))
 			if bm:
 				tac = SubmitSqlRequest('DELETE FROM bookmark WHERE idBookmark=?',(bm[0],))
-				print "tac delete bookmark: " + str(tac)
+				log("tac delete bookmark: " + str(tac))
 		pdlg.close()
 		xbmc.executebuiltin('Container.Refresh')
 
 
 def Export(params):
-	print addon_id + ": Export"
+	log(addon_id + ": Export")
 	addonids = GetAddons()
-	print addonids
+	log(str(addonids), 1)
 
 	exf = open(export_file, 'w')
 	pdlg = xbmcgui.DialogProgress()
 	pds = 100.0 / float(len(addonids))
 	cpd = 0.0
-	pdlg.create(addon_id, 'Exporting...')
+	pdlg.create(addon_id, ls(32015))
 	for addonid in addonids:
 		cpd += pds
 		pdlg.update(int(cpd))
 		result = SubmitSqlRequest('SELECT strFilename, playCount, lastPlayed, idFile FROM files WHERE strFilename REGEXP "plugin://'+addonid+'/.*?"', many = True)
 		if len(result) > 0:
 			#print result
-			print addonid + ': found ' + str(len(result)) + " entries"
+			log(ls(32010) % (addonid, str(len(result))))
 			exf.write('#' + addonid + ":\n")
 			for item in result:
-				bm = SubmitSqlRequest('SELECT timeInSeconds, totalTimeInSeconds FROM bookmark WHERE idFile=? AND type=1',(item[3],))
+				bm = SubmitSqlRequest('SELECT timeInSeconds, totalTimeInSeconds FROM bookmark WHERE idFile=? AND type=1', (item[3],))
 				#print bm
-				item = map(str,item)
+				item = map(str, item)
 				rline = ", ".join(item[:-1])
 				if bm:
-					bm = map(str,bm)
+					bm = map(str, bm)
 					rline += ", " + ", ".join(bm)
 				rline += "\n"
 				rline = rline.replace("None", "null")
@@ -265,17 +270,17 @@ def Export(params):
 
 
 def Main():
-	li = xbmcgui.ListItem("Export")
-	li.setInfo(type="video", infoLabels = {"plot":"Export addons whatch states (flags and resume time positions) to a file."})
-	uri = construct_uri({"func":"Export"})
+	li = xbmcgui.ListItem(ls(32016))
+	li.setInfo(type="video", infoLabels = {"plot": ls(32017)})
+	uri = construct_uri({"func": "Export"})
 	xbmcplugin.addDirectoryItem(h, uri, li)
-	li = xbmcgui.ListItem("Import")
-	li.setInfo(type="video", infoLabels = {"plot":"Import addons whatch states from a file."})
-	uri = construct_uri({"func":"Import"})
+	li = xbmcgui.ListItem(ls(32018))
+	li.setInfo(type="video", infoLabels = {"plot": ls(32019)})
+	uri = construct_uri({"func": "Import"})
 	xbmcplugin.addDirectoryItem(h, uri, li)
-	li = xbmcgui.ListItem("View statistics / delete")
-	li.setInfo(type="video", infoLabels = {"plot":"Shows the amount of watched videos for any installed addon. Choosing the particular addon will delete all watched states from DB for choosen addon."})
-	uri = construct_uri({"func":"Delete"})
+	li = xbmcgui.ListItem(ls(32020))
+	li.setInfo(type="video", infoLabels = {"plot": ls(32031)})
+	uri = construct_uri({"func": "Delete"})
 	xbmcplugin.addDirectoryItem(h, uri, li, isFolder = True)
 	xbmcplugin.endOfDirectory(h)
 
@@ -297,7 +302,7 @@ if func != None:
 	try: pfunc = globals()[func]
 	except:
 		pfunc = None
-		xbmc.log('[%s]: Function "%s" not found' % (addon_id, func), 4)
+		log('[%s]: Function "%s" is not found' % (addon_id, func), 4)
 		showMessage(addon_id, 'Function "%s" is not found' % func)
 	if pfunc: pfunc(params)
 else:

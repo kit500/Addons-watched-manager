@@ -1,20 +1,25 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.watched.in.addons.manager" name="Watched-in-addons manager" version="0.0.1" provider-name="kit500">
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes"?>
+<addon id = "script.addons.watched.backup" name = "Add-ons watched backup" version = "0.0.2" provider-name = "kit500">
   <requires>
-    <import addon="xbmc.python" version="2.1.0"/>
+    <import addon = "xbmc.python" version = "2.1.0"/>
   </requires>
-  <extension point="xbmc.python.pluginsource" library="default.py">
+  <extension point = "xbmc.python.pluginsource" library = "default.py">
     <provides>executable</provides>
   </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>Performs export/import/delete DB manipulation for watched flags and resume time positions for video addons.</summary>
-    <description>How to use:
-    In the addon settings specify the export/import files locations (if not specified, the default ones in the addon folder will be used).
+  <extension point = "xbmc.addon.metadata">
+    <summary lang = "en">Performs export/import/delete DB manipulation for watched flags and resume time positions for installed video addons.</summary>
+    <description lang = "en">How to use:
+All operations for addons requires for that addons to be istalled. For example watch states of non installed addons won't be imported to prevent excessive rows in the DB.
+The export/import files locations can be specified in Programs -> Addons watched manager -> Add-on settings, otherwise the default ones in the addon folder will be used.
 
-    The following actions is available:
-    [B]Export[/B] - Export addons whatch states (flags and resume time positions) to a file.
-    [B]Import[/B] - Import addons whatch states from a file.
-    [B]View statistics / delete[/B] - Shows the amount of watched videos for any installed addon. Choosing the particular addon will delete all watched states from DB for choosen addon.</description>
+The following actions is available:
+  [B]Export[/B] - Export addons watch states (watched flags and resume time positions) to a file.
+  [B]Import[/B] - Import addons watch states from a file.
+  [B]View statistics / delete[/B] - Shows the amount of watched videos for every installed video addon. Choosing the particular addon will delete all watch states from DB for choosen addon.
+  
+Notes:
+ - For reason the addon uses direct access to DB, it depends on used DB version. Therefore, it is important to keep to the compatibility. By now the compatibility is: XBMC 12 up to Kodi 14 alpha 2. This note can be extended while the new versions will be tested or implemented in the addon.
+ - Export/import file is a text file uses the following syntax: empty lines and lines starting with "#" are ignored, the separator between info items in lines should be ", " (at least one space following comma).</description>
     <platform>all</platform>
   </extension>
 </addon>

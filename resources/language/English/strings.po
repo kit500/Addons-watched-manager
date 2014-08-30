@@ -1,0 +1,115 @@
+# XBMC Media Center language file
+# Addon Name: Add-ons watched backup
+# Addon id: addons.watched.backup
+# Addon Provider: kit500
+msgid ""
+msgstr ""
+
+msgctxt "#30000"
+msgid "File to export to"
+msgstr ""
+
+msgctxt "#30001"
+msgid "File to import from"
+msgstr ""
+
+
+msgctxt "#32000"
+msgid "DB connection error in SubmitSqlRequest: %s"
+msgstr ""
+
+msgctxt "#32001"
+msgid "SubmitSqlRequest error in executing %s: %s"
+msgstr ""
+
+msgctxt "#32002"
+msgid "DB commiting error in SubmitSqlRequest: %s"
+msgstr ""
+
+msgctxt "#32003"
+msgid "Import file is empty."
+msgstr ""
+
+msgctxt "#32005"
+msgid "Importing..."
+msgstr ""
+
+msgctxt "#32006"
+msgid "Not a proper line in import file: %s. Playcount property should be integer or null."
+msgstr ""
+
+msgctxt "#32007"
+msgid "Not a proper line in import file: %s. Wrong path."
+msgstr ""
+
+msgctxt "#32008"
+msgid "Addon is not installed: %s"
+msgstr ""
+
+msgctxt "#32009"
+msgid "Not a proper line in import file: %s. Wrong line format."
+msgstr ""
+
+msgctxt "#32010"
+msgid "%s: found %s entries"
+msgstr ""
+
+msgctxt "#32011"
+msgid "delete all for %s (%s entries)"
+msgstr ""
+
+msgctxt "#32012"
+msgid "Delete all for %s?"
+msgstr ""
+
+msgctxt "#32013"
+msgid "%s: nothing to delete"
+msgstr ""
+
+msgctxt "#32014"
+msgid "Deleting..."
+msgstr ""
+
+msgctxt "#32015"
+msgid "Exporting..."
+msgstr ""
+
+msgctxt "#32016"
+msgid "Export"
+msgstr ""
+
+msgctxt "#32017"
+msgid "Export addons whatch states (watched flags and resume time positions) to a file."
+msgstr ""
+
+msgctxt "#32018"
+msgid "Import"
+msgstr ""
+
+msgctxt "#32019"
+msgid "Import addons whatch states from a file."
+msgstr ""
+
+msgctxt "#32020"
+msgid "View statistics / delete"
+msgstr ""
+
+msgctxt "#32021"
+msgid "Shows the amount of watched videos for any installed addon. Choosing the particular addon will delete all watch states from DB for choosen addon."
+msgstr ""
+
+msgctxt "#32022"
+msgid "Use season folders"
+msgstr ""
+
+msgctxt "#32023"
+msgid "Use season folders"
+msgstr ""
+
+msgctxt "#32024"
+msgid "Use season folders"
+msgstr ""
+
+msgctxt "#32025"
+msgid "Use season folders"
+msgstr ""

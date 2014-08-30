@@ -9,8 +9,8 @@ All operations for addons requires for that addons to be istalled. For example, 
 The export/import files locations can be specified in Programs -> Addons watched manager -> Add-on settings, otherwise the default ones in the addon folder will be used.
 
 The following actions is available:  
-  Export - Export addons whatch states (watched flags and resume time positions) to a file.  
-  Import - Import addons whatch states from a file.  
+  Export - Export addons watch states (watched flags and resume time positions) to a file.  
+  Import - Import addons watch states from a file.  
   View statistics / delete - Shows the amount of watched videos of every installed video addon. Choosing the particular addon will delete all watch states from DB for choosen addon.
 
 Notes:

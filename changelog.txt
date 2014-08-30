@@ -1,0 +1,5 @@
+0.0.2
+ - Code improvements
+ 
+0.0.1
+ - First release
