@@ -39,7 +39,7 @@ msgid "Not a proper line in import file: %s. Playcount property should be intege
 msgstr ""
 
 msgctxt "#32007"
-msgid "Not a proper line in import file: %s. Wrong path."
+msgid "Not a proper line in import file: %s. Wrong path: %s"
 msgstr ""
 
 msgctxt "#32008"

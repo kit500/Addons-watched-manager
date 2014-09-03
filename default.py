@@ -67,7 +67,7 @@ def SubmitSqlRequest(request, vars = (), many = False):
 	try:
 		c.execute(request, vars)
 	except Exception as e:
-		log(ls(32001) % (request, str(e))
+		log(ls(32001) % (request, str(e)))
 		dbconn.close()
 		return None
 	if re.search('(UPDATE|INSERT|DELETE)', request):
@@ -75,7 +75,7 @@ def SubmitSqlRequest(request, vars = (), many = False):
 			dbconn.commit()
 			result = c.rowcount
 		except:
-			log(ls(32002) % e)
+			log(ls(32002) % str(e))
 			dbconn.close()
 			return None
 	else:
@@ -133,14 +133,13 @@ def Import(params):
 			if items[1].isdigit():
 				items[1] = int(items[1])
 			else:
-				log(ls(32006) % str(linen))
+				log(ls(32006) % str(linen + 1))
 				log(rline)
 				continue
 		try:
 			path = re.compile('(plugin://.+?/).*').findall(items[0])[0]
 		except Exception as e:
-			log(e)
-			log(ls(32007) % str(linen))
+			log(ls(32007) % (str(linen + 1), str(e)))
 			log(rline)
 			continue
 		addonid = re.compile('plugin://(.+?)/.*').findall(path)[0]
@@ -151,7 +150,7 @@ def Import(params):
 		log(str(items))
 		existedidpath = filter(lambda i: i[0] == path, paths)
 		if len(items) != 3 and len(items) != 5:
-			log(ls(32009) % str(linen))
+			log(ls(32009) % str(linen + 1))
 			log(rline)
 			continue
 
@@ -222,7 +221,7 @@ def deletespecific(params):
 		cpd = 0.0
 		pdlg.create(addon_id, ls(32014))
 		for item in result:
-			log(str(item))
+			log("file id: " + str(item[0]))
 			cpd += pds
 			pdlg.update(int(cpd))
 			bm = SubmitSqlRequest('SELECT idBookmark FROM bookmark WHERE idFile=? AND type=1', (item[0],))
@@ -279,7 +278,7 @@ def Main():
 	uri = construct_uri({"func": "Import"})
 	xbmcplugin.addDirectoryItem(h, uri, li)
 	li = xbmcgui.ListItem(ls(32020))
-	li.setInfo(type="video", infoLabels = {"plot": ls(32031)})
+	li.setInfo(type="video", infoLabels = {"plot": ls(32021)})
 	uri = construct_uri({"func": "Delete"})
 	xbmcplugin.addDirectoryItem(h, uri, li, isFolder = True)
 	xbmcplugin.endOfDirectory(h)
