@@ -79,7 +79,7 @@ msgid "Export"
 msgstr ""
 
 msgctxt "#32017"
-msgid "Export addons whatch states (watched flags and resume time positions) to a file."
+msgid "Export addons whatch statuses (watched flags and resume time positions) to a file."
 msgstr ""
 
 msgctxt "#32018"
@@ -87,7 +87,7 @@ msgid "Import"
 msgstr ""
 
 msgctxt "#32019"
-msgid "Import addons whatch states from a file."
+msgid "Import addons whatch statuses from a file."
 msgstr ""
 
 msgctxt "#32020"
@@ -95,21 +95,21 @@ msgid "View statistics / delete"
 msgstr ""
 
 msgctxt "#32021"
-msgid "Shows the amount of watched videos for any installed addon. Choosing the particular addon will delete all watch states from DB for choosen addon."
+msgid "Shows the amount of watched videos for any installed addon. Choosing the particular addon will delete all watch statuses from the DB for a choosen addon."
 msgstr ""
 
 msgctxt "#32022"
-msgid "Use season folders"
+msgid "reserved"
 msgstr ""
 
 msgctxt "#32023"
-msgid "Use season folders"
+msgid "reserved"
 msgstr ""
 
 msgctxt "#32024"
-msgid "Use season folders"
+msgid "reserved"
 msgstr ""
 
 msgctxt "#32025"
-msgid "Use season folders"
+msgid "reserved"
 msgstr ""
